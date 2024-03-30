@@ -10,19 +10,19 @@ const app = express();
 
 const PORT = process.env.PORT;
 
+const errorHandler = (error, req, res, next) => {
+  res.json(error);
+};
+
 app.use(express.json());
 app.use(cors());
-
-app.get("/", (req, res) => {
-  res.json({ msg: "Home Page" });
-});
 
 app.get("/todos", async (req, res) => {
   try {
     const todos = await pool.query("SELECT * FROM todo_table");
     res.json(todos.rows);
   } catch (error) {
-    res.json(error);
+    next(error);
   }
 });
 
@@ -36,7 +36,7 @@ app.post("/todos", async (req, res) => {
     );
     res.json({ newTodo, msg: "Todo Added", success: true });
   } catch (error) {
-    res.json(error);
+    next(error);
   }
 });
 
@@ -49,7 +49,7 @@ app.get("/todos/:id", async (req, res) => {
     ]);
     res.json(todo.rows);
   } catch (error) {
-    res.json(error);
+    next(error);
   }
 });
 
@@ -57,34 +57,34 @@ app.put("/todos/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { desc, completed } = req.body;
-    const todo = await pool.query(
+    await pool.query(
       "UPDATE todo_table SET todo_desc = $1, todo_completed = $2 WHERE id = $3",
       [desc, completed, id]
     );
     res.json({ msg: "Todo updated.", success: true });
   } catch (error) {
-    res.json(error);
+    next(error);
   }
 });
 
 app.delete("/todos/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const delTodo = await pool.query("DELETE FROM todo_table WHERE id = $1", [
+    await pool.query("DELETE FROM todo_table WHERE id = $1", [
       id,
     ]);
     res.json({ msg: "Todo deleted", success: true });
   } catch (error) {
-    res.json(error);
+    next(error);
   }
 });
 
 app.delete("/todos", async (req, res) => {
   try {
-    const delAllTodos = await pool.query("DELETE FROM todo_table");
+    await pool.query("DELETE FROM todo_table");
     res.json({ msg: "All todos deleted!", success: true });
   } catch (error) {
-    res.json(error);
+    next(error);
   }
 });
 

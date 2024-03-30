@@ -1,0 +1,17 @@
+{
+  "folders": [
+	{
+		"path": "../fetchdata"
+	},
+	{
+		"path": "../AfterStorm/afterstorm"
+	},
+	{
+		"path": "."
+	},
+	{
+		"path": "../daysofourlives"
+	}
+],
+  "settings": {}
+}
